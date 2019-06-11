@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\Debug\Exception\FlattenException;
 
 class Handler extends ExceptionHandler
 {
@@ -46,6 +47,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        $fe = FlattenException::create($exception);
+
+        $response = [
+            'statusCode' => $fe->getStatusCode(),
+            'code' => $fe->getCode(),
+        ];
+
+        if (env('APP_DEBUG', config('app.debug', false)) == true)
+        {
+            $response['message'] = $fe->getMessage();
+//            $response['trace'] = $fe->getTrace();
+        }
+
+        return response()->json($response, $fe->getStatusCode(), $fe->getHeaders());
     }
 }
