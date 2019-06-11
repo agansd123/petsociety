@@ -32,8 +32,8 @@ class UsersController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-
-        return response()->json(['status'=>1,'msg'=>'success','data'=>1245]);
+        session()->flash('success','欢迎，您将在这里开启一段新的旅程~');
+        return response()->json(['errno'=>0,'msg'=>'success','user'=>$user->id]);
     }
 
 }
